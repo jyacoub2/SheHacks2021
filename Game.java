@@ -138,9 +138,21 @@ public class Game {
 		
 	}
 	
-	// 
+	// add the recently completed question to the end of the doneQuestion array
 	private void modifyDoneQuestions(Question newDone) {
-		
+		//make array of one size bigger
+		Question[] newDoneQuestions = new Question [doneQuestions.length + 1];
+
+		//iterate through to copy data from newDoneQuestions to newDoneQuestions
+		for (int i = 0; i<doneQuestions.length; i++)
+		{
+		    newDoneQuestions[i] = doneQuestions[i];
+		}
+
+		//tack newDone to end of newDoneQuestions
+		newDoneQuestions[newDoneQuestions.length - 1] = newDone;
+		}
+	
 	}
 	
 	// Check whether the selected answer is correct
