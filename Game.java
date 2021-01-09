@@ -1,3 +1,4 @@
+import java.util.Random;
 
 public class Game {
 	
@@ -35,14 +36,36 @@ public class Game {
 		else if (difficulty == 2) {
 			set = medQuestions;
 		}
-		else if (difficulty == 3) {
+		else {
 			set = hardQuestions;
 		}
 		
+		int counter = 0;
 		
 		for (int i=0; i<doneQuestions.length; i++) {
-			
+			for (int j=0; j<set.length; j++) {
+				if (set[j].getId() == doneQuestions[i].getId()) {
+					set[j] = null;
+					counter++;
+				}
+			}
 		}
+		
+		Question[] newSet = new Question[set.length - counter]; 
+		int track = 0; 
+		
+		for (int i=0; i<set.length; i++) {
+			if (set[i] != null) {
+				newSet[track] = set[i];
+				track++;
+			}
+		}
+		
+		Random rnd = new Random();
+		int randomNum = rnd.nextInt(newSet.length);
+		
+		return newSet[randomNum];
+		
 	}
 	
 	// Check whether the selected answer is correct
@@ -61,5 +84,3 @@ public class Game {
 	public void saveGame() {
 		
 	}
-
-}
