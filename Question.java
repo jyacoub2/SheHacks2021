@@ -35,6 +35,30 @@ public class Question {
 		statement = newStatement;
 	}
 	
+	public String getCorrect() {
+		return correct;
+	}
+	
+	public void setCorrect(String newCorrect) {
+		correct = newCorrect;
+	}
+	
+	public String[] getAnswers() {
+		return answers;
+	}
+	
+	public void setAnswers(String[] newAnswers) {
+		answers = newAnswers;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int newId) {
+		id = newId;
+	}
+	
 	// Randomly select answer order for the answers
 	public int[] answerRandomizer(int numAnswers) {
 			
