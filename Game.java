@@ -160,7 +160,7 @@ public class Game {
 	public void saveGame() {
 		BufferedWriter bw;
 		try {
-			bw = new BufferedWriter(new FileWriter("saved.txt"));
+			bw = new BufferedWriter(new FileWriter("saveFile.txt"));
 			
 			bw.write(doneQuestions.length);
 			bw.newLine();
