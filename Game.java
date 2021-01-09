@@ -40,6 +40,7 @@ public class Game {
 		else {
 			outcome = False;
 		}
+		return outcome;
 	}
 	
 	// Write current game state to file 
