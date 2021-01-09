@@ -1,4 +1,7 @@
 import java.util.Random;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Game {
 	
@@ -68,6 +71,11 @@ public class Game {
 		
 	}
 	
+	// 
+	private void modifyDoneQuestions(Question newDone) {
+		
+	}
+	
 	// Check whether the selected answer is correct
 	public boolean checkAnswer(Question question, String answer) {
 		boolean outcome;
@@ -82,5 +90,18 @@ public class Game {
 	
 	// Write current game state to file 
 	public void saveGame() {
+		BufferedWriter bw;
+		try {
+			bw = new BufferedWriter(new FileWriter("saved.txt"));
+			
+			bw.write(doneQuestions.length);
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Invalid IO");
+		}
 		
+		bw.close();
 	}
+
+}
