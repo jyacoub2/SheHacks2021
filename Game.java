@@ -1,7 +1,10 @@
 import java.util.Random;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 
 public class Game {
 	
@@ -11,13 +14,77 @@ public class Game {
 	private Question[] doneQuestions;
 	
 	private int numQuestions;
+	private int numEasy;
+	private int numMed;
+	private int numHard;
 	private int position;
 	
 	// Constructor for game class
 	// Read from file and create question objects
 	// Read from save file to determine current position
-	public Game(String fileName) {
+	public Game(String readFile, String saveFile) {
+		String nextLine;
+		String fileName; 
+		try {
+			fileName = readFile;
+			BufferedReader brRead = new BufferedReader(new FileReader(fileName));
+			
+			String newStatement;
+			int newId; 
+			int newDifficulty;
+			String[] newAnswers;
+			
+			int nextAns = 0;
+			int questNum = 0;
+			
+			int easyNum = 0;
+			int medNum = 0;
+			int hardNum = 0;
+			
+			numEasy = Integer.parseInt(brRead.readLine());
+			numMed = Integer.parseInt(brRead.readLine());
+			numHard = Integer.parseInt(brRead.readLine());
+			
+			easyQuestions = new Question[numEasy];
+			medQuestions = new Question[numMed];
+			hardQuestions = new Question[numHard];
+			
+			nextLine = brRead.readLine();
+			while (nextLine != null) {
+				newStatement = nextLine.substring(1);
+				newDifficulty = Integer.parseInt(brRead.readLine());
+				newId = questNum;
+				nextLine = brRead.readLine();
+				while (nextLine != null && nextLine.charAt(0) != '~') {
+					newAnswers[nextAns] = nextLine;
+					nextAns++;
+					nextLine = brRead.readLine();
+				}
+				nextAns = 0;
+				if (newDifficulty == 1) {
+					easyQuestions[easyNum] = new Question(newStatement, newAnswers, newDifficulty, newId);
+					easyNum++;
+				} else if (newDifficulty == 2) {
+					medQuestions[medNum] = new Question(newStatement, newAnswers, newDifficulty, newId);
+					medNum++;
+				} else {
+					hardQuestions[hardNum] = new Question(newStatement, newAnswers, newDifficulty, newId);
+					hardNum++;
+				}
+				questNum++;
+			}
+			numQuestions = questNum;
+			brRead.close();
+			
+			fileName = saveFile;
+			BufferedReader brSave = new BufferedReader(new FileReader(fileName));
+			brSave.readLine();
+			
+			brSave.close();
 		
+		} catch (FileNotFoundException e) {
+			System.out.println("File " + fileName + " could not be found.");
+		}
 	}
 
 	// Pending interface...
