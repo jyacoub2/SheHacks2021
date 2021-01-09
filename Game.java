@@ -28,7 +28,21 @@ public class Game {
 	
 	// Randomly select next question from appropriate array
 	public Question questionRandomizer(int difficulty) {
+		Question[] set;
+		if (difficulty == 1) {
+			set = easyQuestions;
+		}
+		else if (difficulty == 2) {
+			set = medQuestions;
+		}
+		else if (difficulty == 3) {
+			set = hardQuestions;
+		}
 		
+		
+		for (int i=0; i<doneQuestions.length; i++) {
+			
+		}
 	}
 	
 	// Check whether the selected answer is correct
