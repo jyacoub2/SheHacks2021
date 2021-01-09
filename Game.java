@@ -33,7 +33,13 @@ public class Game {
 	
 	// Check whether the selected answer is correct
 	public boolean checkAnswer(Question question, String answer) {
-		
+		boolean outcome;
+		if question.correct.equals(answer) {
+			outcome = True;
+		}
+		else {
+			outcome = False;
+		}
 	}
 	
 	// Write current game state to file 
