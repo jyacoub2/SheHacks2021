@@ -95,13 +95,19 @@ public class Game {
 			bw = new BufferedWriter(new FileWriter("saved.txt"));
 			
 			bw.write(doneQuestions.length);
+			bw.newLine();
+			
+			for (int i=0; i<doneQuestions.length; i++) {
+				bw.write(doneQuestions[i].getId());
+				bw.newLine();
+			}
+			
+			bw.close();
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Invalid IO");
 		}
 		
-		bw.close();
 	}
 
 }
