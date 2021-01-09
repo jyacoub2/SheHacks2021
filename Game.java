@@ -11,6 +11,7 @@ public class Game {
 	private Question[] easyQuestions;
 	private Question[] medQuestions;
 	private Question[] hardQuestions;
+	private Question[] allQuestions;
 	private Question[] doneQuestions;
 	
 	private int numQuestions;
@@ -24,7 +25,7 @@ public class Game {
 	// Read from save file to determine current position
 	public Game(String readFile, String saveFile) {
 		String nextLine;
-		String fileName; 
+		String fileName = ""; 
 		try {
 			fileName = readFile;
 			BufferedReader brRead = new BufferedReader(new FileReader(fileName));
@@ -44,18 +45,22 @@ public class Game {
 			numEasy = Integer.parseInt(brRead.readLine());
 			numMed = Integer.parseInt(brRead.readLine());
 			numHard = Integer.parseInt(brRead.readLine());
+			numQuestions = numEasy + numMed + numHard;
 			
 			easyQuestions = new Question[numEasy];
 			medQuestions = new Question[numMed];
 			hardQuestions = new Question[numHard];
+			allQuestions = new Question[numQuestions];
 			
 			nextLine = brRead.readLine();
 			while (nextLine != null) {
 				newStatement = nextLine.substring(1);
 				newDifficulty = Integer.parseInt(brRead.readLine());
 				newId = questNum;
+				newAnswers = new String[0];
 				nextLine = brRead.readLine();
 				while (nextLine != null && nextLine.charAt(0) != '~') {
+					newAnswers = expandAnswers(newAnswers);
 					newAnswers[nextAns] = nextLine;
 					nextAns++;
 					nextLine = brRead.readLine();
@@ -63,27 +68,48 @@ public class Game {
 				nextAns = 0;
 				if (newDifficulty == 1) {
 					easyQuestions[easyNum] = new Question(newStatement, newAnswers, newDifficulty, newId);
+					allQuestions[questNum] = easyQuestions[easyNum];
 					easyNum++;
 				} else if (newDifficulty == 2) {
 					medQuestions[medNum] = new Question(newStatement, newAnswers, newDifficulty, newId);
+					allQuestions[questNum] = medQuestions[medNum];
 					medNum++;
 				} else {
 					hardQuestions[hardNum] = new Question(newStatement, newAnswers, newDifficulty, newId);
+					allQuestions[questNum] = hardQuestions[hardNum];
 					hardNum++;
 				}
 				questNum++;
 			}
-			numQuestions = questNum;
 			brRead.close();
 			
 			fileName = saveFile;
 			BufferedReader brSave = new BufferedReader(new FileReader(fileName));
-			brSave.readLine();
+			
+			int numDone = Integer.parseInt(brSave.readLine());
+			this.position = numDone;
+			
+			doneQuestions = new Question[numDone];
+			int[] doneQuestionIds = new int[numDone];
+			int count = 0;
+			
+			nextLine = brSave.readLine();
+			while (nextLine != null) {
+				doneQuestionIds[count] = Integer.parseInt(nextLine);
+				count++;
+				nextLine = brSave.readLine();
+			}
 			
 			brSave.close();
+			
+			for (int i=0; i<doneQuestionIds.length; i++) {
+				doneQuestions[i] = allQuestions[doneQuestionIds[i]];
+			}
 		
 		} catch (FileNotFoundException e) {
 			System.out.println("File " + fileName + " could not be found.");
+		} catch (IOException e) {
+			System.out.println("Unrecognized input");
 		}
 	}
 
@@ -135,24 +161,6 @@ public class Game {
 		int randomNum = rnd.nextInt(newSet.length);
 		
 		return newSet[randomNum];
-		
-	}
-	
-	// add the recently completed question to the end of the doneQuestion array
-	private void modifyDoneQuestions(Question newDone) {
-		//make array of one size bigger
-		Question[] newDoneQuestions = new Question [doneQuestions.length + 1];
-
-		//iterate through to copy data from newDoneQuestions to newDoneQuestions
-		for (int i = 0; i<doneQuestions.length; i++)
-		{
-		    newDoneQuestions[i] = doneQuestions[i];
-		}
-
-		//tack newDone to end of newDoneQuestions
-		newDoneQuestions[newDoneQuestions.length - 1] = newDone;
-		}
-	
 	}
 	
 	// Check whether the selected answer is correct
@@ -161,8 +169,7 @@ public class Game {
 		if (question.getCorrect().equals(answer)) {
 			outcome = true;
 			modifyDoneQuestions(question);
-		}
-		else {
+		} else {
 			outcome = false;
 		}
 		return outcome;
@@ -173,21 +180,47 @@ public class Game {
 		BufferedWriter bw;
 		try {
 			bw = new BufferedWriter(new FileWriter("saveFile.txt"));
-			
+				
 			bw.write(doneQuestions.length);
 			bw.newLine();
-			
+				
 			for (int i=0; i<doneQuestions.length; i++) {
 				bw.write(doneQuestions[i].getId());
 				bw.newLine();
 			}
-			
+				
 			bw.close();
-			
+				
 		} catch (IOException e) {
 			System.out.println("Invalid IO");
 		}
-		
+			
 	}
+	
+	// Expand an array and add a value to the end
+	private String[] expandAnswers(String[] answerArray) {
+		// Make array of one size bigger
+		String[] biggerArray = new String[answerArray.length + 1];
 
+		// Iterate through to copy data from old array to larger array
+		for (int i = 0; i<answerArray.length; i++) {
+				  biggerArray[i] = answerArray[i];
+		}
+		return biggerArray;
+	}
+		
+	// Add the recently completed question to the end of the doneQuestion array
+	private void modifyDoneQuestions(Question newDone) {
+		// Make array of one size bigger
+		Question[] newDoneQuestions = new Question [doneQuestions.length + 1];
+
+		// Iterate through to copy data from newDoneQuestions to newDoneQuestions
+		for (int i = 0; i<doneQuestions.length; i++) {
+			newDoneQuestions[i] = doneQuestions[i];
+		}
+
+		// Tack newDone to end of newDoneQuestions
+		newDoneQuestions[newDoneQuestions.length - 1] = newDone;
+		doneQuestions = newDoneQuestions;
+	}
 }
