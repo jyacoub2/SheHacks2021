@@ -11,6 +11,7 @@ public class Game {
 	
 	// Constructor for game class
 	// Read from file and create question objects
+	// Read from save file to determine current position
 	public Game(String fileName) {
 		
 	}
