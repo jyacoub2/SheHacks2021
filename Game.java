@@ -81,6 +81,7 @@ public class Game {
 		boolean outcome;
 		if (question.getCorrect().equals(answer)) {
 			outcome = true;
+			modifyDoneQuestions(question);
 		}
 		else {
 			outcome = false;
