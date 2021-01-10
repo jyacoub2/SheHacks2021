@@ -76,11 +76,4 @@ public class AnswerGUI implements ActionListener {
 	public String getSelected() {
 		return selected;
 	}
-	
-	public static void main(String[] args) {
-		String question = "What is the best colour?";
-		String[] colours = {"red","orange","yellow","green","blue","purple"};
-		new AnswerGUI(question,colours);
-	}
-
 }
