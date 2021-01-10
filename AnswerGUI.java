@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class AnswerGUI implements ActionListener {
+public class AnswerGUI {
 	
 	private JFrame qFrame;
 	private JPanel qPanel;
