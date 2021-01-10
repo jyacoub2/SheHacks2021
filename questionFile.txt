@@ -1,0 +1,18 @@
+3
+0
+0
+~What is the capital city of Canada?
+1
+Ottawa
+Toronto
+Vancouver
+~How many provinces does Canada have?
+1
+Ten
+Thirteen
+Canada doesn't have provinces
+~How many provinces did Canada have in 1867?
+1
+Four
+Three
+Six
