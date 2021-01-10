@@ -1,5 +1,8 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -41,9 +44,9 @@ public class InputGUI implements ActionListener {
 		incAnsCounter = 1;
 		
 		// question Frame
-		difficulties = new int[0];
-		questions = new String[0];
-		answers = new String[0][1];
+		difficulties = new int[50];
+		questions = new String[50];
+		answers = new String[50][10];
 		
 		question = new JLabel("Enter Question: ");
 		question.setBounds(10,20,100,25);
@@ -116,58 +119,11 @@ public class InputGUI implements ActionListener {
 		
 	}
 	
-	public static void main(String[] args) {
-		InputGUI GUI = new InputGUI();
-	}
-	
-	private void extendDiff() {
-		// Make array of one size bigger
-		int[] newDifficulties = new int [difficulties.length + 1];
-
-		// Iterate through to copy data from newDoneQuestions to newDoneQuestions
-		for (int i = 0; i<difficulties.length; i++) {
-			newDifficulties[i] = difficulties[i];
-		}
-
-		difficulties = newDifficulties;
-	}
-	
-	private void extendQuestions() {
-		// Make array of one size bigger
-		String[] newQuestions = new String[questions.length + 1];
-		String[][] newAnswers = new String[questions.length + 1][incAnsCounter];
-		
-		// Iterate through to copy data from newDoneQuestions to newDoneQuestions
-		for (int i = 0; i<questions.length; i++) {
-			newQuestions[i] = questions[i];
-			for (int j = 0; j<answers[i].length; j++) {
-				newAnswers[i][j] = answers[i][j];
-			}
-		}
-		
-		questions = newQuestions;
-		answers = newAnswers;
-	}
-	
-	private void extendAnswers() {
-		// Make array of one size bigger
-		String[][] newAnswers = new String[counter][incAnsCounter + 1];
-
-		// Iterate through to copy data from newDoneQuestions to newDoneQuestions
-		for (int i = 0; i<incAnsCounter; i++) {
-			newAnswers[counter-1][i] = answers[counter-1][i];
-		}
-
-		// Tack newDone to end of newDoneQuestions
-		answers = newAnswers;
-	}
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object source = e.getSource();
 		if (source instanceof JButton) {
 			if (source == diffEasy || source == diffMed || source == diffHard) {
-				extendDiff();
 				if (source == diffEasy) {
 					difficulties[counter] = 1;
 				} else if (source == diffMed) {
@@ -176,7 +132,6 @@ public class InputGUI implements ActionListener {
 					difficulties[counter] = 3;
 				}
 				
-				extendQuestions();
 				questions[counter] = qStatement.getText();
 				answers[counter][0] = corAns.getText();
 				
@@ -195,7 +150,6 @@ public class InputGUI implements ActionListener {
 				
 			} else if (source == addAns || source == nextQ || source == finish) {
 				
-				extendAnswers();
 				answers[counter-1][incAnsCounter] = incorAns.getText();
 				incAnsCounter++;
 				
@@ -212,8 +166,88 @@ public class InputGUI implements ActionListener {
 					aInFrame.dispose();
 				} else if (source == finish) {
 					aInFrame.dispose();
+					
+					try {
+						BufferedWriter bw = new BufferedWriter(new FileWriter("questionFile.txt"));
+						
+						int numEasy = 0;
+						int numMed = 0;
+						int numHard = 0;
+						
+						String statement = "";
+						int difficulty = 0;
+						String answer = "";
+						
+						// Count of each difficulty
+						for (int i=0; i<difficulties.length; i++) {
+							if (difficulties[i] == 1) {
+								numEasy++;
+							} else if (difficulties[i] == 2) {
+								numMed++;
+							} else if (difficulties[i] == 3) {
+								numHard++;
+							}
+						}
+						
+						// Read past the first 3 lines
+						bw.write(Integer.toString(numEasy));
+						bw.newLine();
+						bw.write(Integer.toString(numMed));
+						bw.newLine();
+						bw.write(Integer.toString(numHard));
+						bw.newLine();
+						
+						// Read questions from GUI until "done" selected
+						for (int i=0; i<questions.length; i++) {
+							// Read statement from GUI
+							statement = questions[i];
+							if (statement != null) {
+								bw.write("~" + statement);
+								bw.newLine();
+							}
+							
+							// Read difficulty from GUI
+							difficulty = difficulties[i];
+							if (difficulty != 0) {
+								bw.write(Integer.toString(difficulty));
+								bw.newLine();
+							}
+							
+							// Read answers from GUI until "next question" button selected
+							// Display "add answer"
+							for (int j=0; j<answers[i].length; j++) {
+								// Read answer from GUI
+								answer = answers[i][j];
+								if (answer != null) {
+									bw.write(answer);
+									bw.newLine();
+								}
+							}
+						}
+						
+						bw.close();
+								
+					} catch (IOException f) {
+						System.out.println("Invalid IO");
+					}
 				}
 			}
-		} 
+		}
+	}
+	
+	public String[] getQuestions() {
+		return questions;
+	}
+	
+	public String[][] getAnswers() {
+		return answers;
+	}
+	
+	public int[] getDifficulties() {
+		return difficulties;
+	}
+	
+	public static void main(String[] args) {
+		new InputGUI();
 	}
 }
