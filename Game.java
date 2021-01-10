@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.BufferedReader;
@@ -19,11 +20,15 @@ public class Game {
 	private int numMed;
 	private int numHard;
 	private int position;
+	private int delaySeconds;
 	
 	// Constructor for game class
 	// Read from file and create question objects
 	// Read from save file to determine current position
 	public Game(String readFile, String saveFile) {
+		
+		delaySeconds = 5;
+		
 		String nextLine;
 		String fileName = ""; 
 		try {
@@ -51,6 +56,7 @@ public class Game {
 			medQuestions = new Question[numMed];
 			hardQuestions = new Question[numHard];
 			allQuestions = new Question[numQuestions];
+			doneQuestions = new Question[0];
 			
 			nextLine = brRead.readLine();
 			while (nextLine != null) {
@@ -86,24 +92,27 @@ public class Game {
 			fileName = saveFile;
 			BufferedReader brSave = new BufferedReader(new FileReader(fileName));
 			
-			int numDone = Integer.parseInt(brSave.readLine());
-			this.position = numDone;
-			
-			doneQuestions = new Question[numDone];
-			int[] doneQuestionIds = new int[numDone];
-			int count = 0;
-			
-			nextLine = brSave.readLine();
-			while (nextLine != null) {
-				doneQuestionIds[count] = Integer.parseInt(nextLine);
-				count++;
+			String readValue = brSave.readLine();
+			if (readValue != null) {
+				int numDone = Integer.parseInt(readValue);
+				this.position = numDone;
+				
+				doneQuestions = new Question[numDone];
+				int[] doneQuestionIds = new int[numDone];
+				int count = 0;
+				
 				nextLine = brSave.readLine();
-			}
-			
-			brSave.close();
-			
-			for (int i=0; i<doneQuestionIds.length; i++) {
-				doneQuestions[i] = allQuestions[doneQuestionIds[i]];
+				while (nextLine != null) {
+					doneQuestionIds[count] = Integer.parseInt(nextLine);
+					count++;
+					nextLine = brSave.readLine();
+				}
+				
+				brSave.close();
+				
+				for (int i=0; i<doneQuestionIds.length; i++) {
+					doneQuestions[i] = allQuestions[doneQuestionIds[i]];
+				}
 			}
 		
 		} catch (FileNotFoundException e) {
@@ -115,7 +124,60 @@ public class Game {
 
 	// Pending interface...
 	public static void main(String args[]) {
-		
+		Game play = new Game("questionFile.txt", "saveFile.txt");
+		AnswerGUI ansGUI;
+		Question nextQuestion;
+		int[] ansRandomize;
+		String[] answers;
+		String selected;
+		for (int i=0; i<play.easyQuestions.length; i++) {
+			nextQuestion = play.questionRandomizer(1);
+			answers = new String[nextQuestion.getAnswers().length];
+			ansRandomize = nextQuestion.answerRandomizer(nextQuestion.getAnswers().length);
+			for (int j=0; j<answers.length; j++) {
+				answers[j] = nextQuestion.getAnswers()[ansRandomize[j]];
+			}
+			ansGUI = new AnswerGUI(nextQuestion.getStatement(), answers);
+			try {
+				TimeUnit.SECONDS.sleep(play.delaySeconds);
+			} catch (InterruptedException e) {
+				System.out.println("System interrupted...");
+			}
+			selected = ansGUI.getSelected();
+			System.out.println(selected);
+		}
+		for (int i=0; i<play.medQuestions.length; i++) {
+			nextQuestion = play.questionRandomizer(2);
+			answers = new String[nextQuestion.getAnswers().length];
+			ansRandomize = nextQuestion.answerRandomizer(nextQuestion.getAnswers().length);
+			for (int j=0; j<ansRandomize.length; j++) {
+				answers[j] = nextQuestion.getAnswers()[ansRandomize[j]];
+			}
+			ansGUI = new AnswerGUI(nextQuestion.getStatement(), answers);
+			try {
+				TimeUnit.SECONDS.sleep(play.delaySeconds);
+			} catch (InterruptedException e) {
+				System.out.println("System interrupted...");
+			}
+			selected = ansGUI.getSelected();
+			System.out.println(selected);
+		}
+		for (int i=0; i<play.hardQuestions.length; i++) {
+			nextQuestion = play.questionRandomizer(3);
+			answers = new String[nextQuestion.getAnswers().length];
+			ansRandomize = nextQuestion.answerRandomizer(nextQuestion.getAnswers().length);
+			for (int j=0; j<ansRandomize.length; j++) {
+				answers[j] = nextQuestion.getAnswers()[ansRandomize[j]];
+			}
+			ansGUI = new AnswerGUI(nextQuestion.getStatement(), answers);
+			try {
+				TimeUnit.SECONDS.sleep(play.delaySeconds);
+			} catch (InterruptedException e) {
+				System.out.println("System interrupted...");
+			}
+			selected = ansGUI.getSelected();
+			System.out.println(selected);
+		}
 	}
 	
 	// Pending interface...
@@ -177,9 +239,8 @@ public class Game {
 	
 	// Write current game state to file 
 	public void saveGame() {
-		BufferedWriter bw;
 		try {
-			bw = new BufferedWriter(new FileWriter("saveFile.txt"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter("saveFile.txt"));
 				
 			bw.write(doneQuestions.length);
 			bw.newLine();
@@ -204,7 +265,7 @@ public class Game {
 
 		// Iterate through to copy data from old array to larger array
 		for (int i = 0; i<answerArray.length; i++) {
-				  biggerArray[i] = answerArray[i];
+			biggerArray[i] = answerArray[i];
 		}
 		return biggerArray;
 	}
